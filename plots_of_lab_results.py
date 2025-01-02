@@ -101,6 +101,7 @@ grouped_data = data.groupby(["Dybde", "Lokation"]).agg(
     Uorganisk_fosfor_se = ("Uorganisk fosfor (kg/ha)", standard_error)
 ).reset_index() # resetter index-værdierne i kolonnerne til [0, 1, 2 osv] fremfor dybde. 
 
+grouped_data.to_json('groupeddata_output.json', orient="columns")
 
 # Funktion til at oprette plots
 def plot_metric_with_depth(data, metric_mean, metric_se, title, xlabel):
