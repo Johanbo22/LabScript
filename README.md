@@ -7,7 +7,7 @@ This repository contains a Python script for analyzing and visualizing environme
 
 - Import environmental data from a Google Sheet.
 - Convert relevant columns to numerical values.
-- Compute summary statistics (mean and standard error) for various soil properties.
+- Compute summary statistics for various soil properties.
 - Visualize the data using line plots with error bars, for multiple locations and depths.
 
 ## Requirements
