@@ -46,7 +46,7 @@ def plot_linear_regression(data, x_columns, y_columns, title, xlabel, ylabel):
     for spine in plt.gca().spines.values(): # formattering af kanten på akserne
         spine.set_visible(True)
         spine.set_linewidth(0.5)
-        spine.set_edgecolor("black")
+        spine.set_edgecolor("green")
 
     plt.tight_layout(rect=[0, 0, 0.75, 1]) # formattering
     plt.show() 
