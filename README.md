@@ -20,8 +20,26 @@ This repository contains a Python script for analyzing and visualizing environme
   - `numpy`
   - `statsmodels.api`
   - `scipy`
+  - `seaborn`
   
 Install the dependencies using `pip`:
 
 ```bash
-pip install pandas matplotlib numpy scipy statsmodels
+pip install pandas matplotlib numpy scipy statsmodels seaborn
+```
+
+Install using `conda`:
+
+1. Create new environment:
+```bash
+conda create --name labscript_env python=3.9
+```
+
+2. Activate the environmet:
+```bash
+conda activate labscript_env
+```
+
+3. Install dependencies:
+```bash
+conda install pandas matplotlib numpy scipy statsmodels seaborn
