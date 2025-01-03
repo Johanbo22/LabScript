@@ -3,9 +3,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 import numpy as np
+import logging
 
 #@authors == Johan Bo Kjær && Kasper Boisen Henriques
 
+logging.basicConfig(level=logging.INFO)
 
 # Denne funktionalitet sørger for at importere en Google Sheets fil ind. Denne fil kan redigeres in real time og er tilgængelig for alle.
 sheet_name = "Resultater_Lab"
@@ -16,8 +18,9 @@ data = pd.read_csv(url, decimal=",")
 df = pd.DataFrame(data)
 
 # Denne giver lidt informationer omkring det data vi har. 
-print(data.info())
-print(data.describe())
+logging.info("Data Info")
+logging.info(data.info())
+logging.info(data.describe())
 
 # List of kolonner der skal konverteres til numeriske værdier
 for col in df:
