@@ -22,13 +22,13 @@ This repository contains a Python script for analyzing and visualizing environme
   - `scipy`
   - `seaborn`
   
-Install the dependencies using `pip`:
+## Install the dependencies using `pip`:
 
 ```bash
 pip install pandas matplotlib numpy scipy statsmodels seaborn
 ```
 
-Install using `conda`:
+## Install using `conda`:
 
 1. Create new environment:
 ```bash
