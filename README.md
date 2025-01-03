@@ -18,9 +18,9 @@ This repository contains a Python script for analyzing and visualizing environme
   - `pandas`
   - `matplotlib`
   - `numpy`
-  - 'statsmodels.api'
-  - 'scipy'
-
+  - `statsmodels.api`
+  - `scipy`
+  
 Install the dependencies using `pip`:
 
 ```bash
