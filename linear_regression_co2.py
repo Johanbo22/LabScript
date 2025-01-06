@@ -26,29 +26,42 @@ def plot_linear_regression(data, x_columns, y_columns, title, xlabel, ylabel):
         line = slope * x + intercept
         r_squared = r_value**2
 
-        plt.scatter(x, y)
-        plt.plot(x, line, color="black", label=f"y = {slope:.2f}x + {intercept:.2f}\n" f"R² = {r_squared:.3f}")
+        plt.scatter(x, y, color="darkorange")
+        plt.plot(x, line, color="black", label=f"y = {slope:.4f}x + {intercept:.2f}\n" f"R² = {r_squared:.4f}")
 
 
-    plt.title(title, fontsize=20, pad=20, fontweight="bold") # formattering
+    plt.title(title, fontsize=12, pad=5, fontweight="bold") # formattering
     
-    plt.xlabel(xlabel, fontsize=12, fontweight="bold")
-    plt.xticks(np.arange(0, 301, 30)) # formattering
-    plt.ylabel(ylabel, fontsize=12, fontweight="bold")
+    plt.xlabel(xlabel, fontsize=8, fontweight="bold")
+    plt.xticks(np.arange(0, 301, 50)) # formattering
+    plt.ylabel(ylabel, fontsize=8, fontweight="bold")
     plt.gca().set_facecolor("#F0F0F0") # farven af akse-displayet
     plt.gca().tick_params(direction="in", which="both")
     plt.subplots_adjust(right=0.75)
-    legend = plt.legend(bbox_to_anchor=(0.4, 0.9), facecolor="#FFFFFF", edgecolor="black", fontsize=10)
-    legend.get_title().set_fontsize("12")
-    legend.get_title().set_fontweight("bold")
+    legend = plt.legend(
+        bbox_to_anchor=(0.5, -0.1),
+        loc="upper center",
+        fontsize=7,
+        title_fontsize=8,
+        frameon=True,
+        facecolor="#F0F0F0",
+        edgecolor="black",
+        shadow=True,
+        fancybox=True,
+        borderpad=1,
+        labelspacing=1.5,
+        handlelength=2,
+        handleheight=1.5,
+        ncol=1 # antal kolonner til legend
+    )
     plt.grid(axis="both", linestyle="--", alpha=0.1, color="#000000")
 
     for spine in plt.gca().spines.values(): # formattering af kanten på akserne
         spine.set_visible(True)
-        spine.set_linewidth(0.5)
+        spine.set_linewidth(2)
         spine.set_edgecolor("black")
 
     plt.tight_layout(rect=[0, 0, 0.75, 1]) # formattering
     plt.show() 
                  
-plot_linear_regression(data_co2, "Tid (sek)", ["0-5cm"], "CO2 Produktion for dybden 0-5cm", "Tid (sek)", "CO2 (ppm)")
+plot_linear_regression(data_co2, "Tid (sek)", ["0-5cm"], "CO₂ produktion for dybden 0-5cm", "Tid (sek)", "CO₂ (µg CO₂-C t⁻¹)")
