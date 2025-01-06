@@ -1,15 +1,15 @@
 def calculate_kg_ha(koncentration, vandindhold, bulk, dybde):
     # Konvert koncentration til mg/mL
-    koncentration_mg = koncentration / 1000
+    koncentration_mg_mL = koncentration / 1000
 
     # Definer væsken 
     væske = 250  # i mL
 
-    # Udregne hvor meget C der er i væsken i mg
-    c_i_væske = koncentration_mg * væske
+    # Udregne hvor meget af stoffet der er i væsken i mg
+    stof_i_væske = koncentration_mg * væske
 
     # Konverter til gram
-    c_g = c_i_væske / 1000
+    stof_g = stof_i_væske / 1000
 
     # Jordmængden og konverter til kg
     jord = 10  # i gram
@@ -22,7 +22,7 @@ def calculate_kg_ha(koncentration, vandindhold, bulk, dybde):
     corr_jord = jord_kg - vand_vægt
 
     # Koncentration af c i jorden i g/kgjord
-    c_jord = c_g / corr_jord
+    stof_jord = stof_g / corr_jord
 
     # Volumenvægt
     bulk_kg = bulk * 1000  # i kg/m³
@@ -38,7 +38,7 @@ def calculate_kg_ha(koncentration, vandindhold, bulk, dybde):
     jord_tyk = tyk_vol * bulk_kg  # i kg
 
     # Total koncentration i g/ha
-    g_ha = jord_tyk * c_jord
+    g_ha = jord_tyk * stof_jord
 
     # Konverter g/ha til kg/ha
     kg_ha = g_ha / 1000
