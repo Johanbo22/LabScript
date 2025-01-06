@@ -24,20 +24,20 @@ def calculate_kg_ha(koncentration, vandindhold, bulk, dybde):
     # Koncentration af c i jorden i g/kgjord
     stof_jord = stof_g / corr_jord
 
-    # Volumenvægt
+    # Volumenvægt konverteres til kg/m^3
     bulk_kg = bulk * 1000  # i kg/m³
 
-    # Tykkelsen af dybden 
+    # Tykkelsen af jordlagene. Denne tykkelse bliver konverteret til meter.
     dybde_m = dybde / 100  # i meter
 
-    # Hektar og volumen af tykkelsen givet ud fra 1 ha.
+    # Hektar og volumen af tykkelsen givet ud fra hektar.
     ha = 10000  # i m² 
     tyk_vol = ha * dybde_m  # i m³
 
     # mængden af jord i dybde intervallet (tykkelsen)
     jord_tyk = tyk_vol * bulk_kg  # i kg
 
-    # Total koncentration i g/ha
+    # Total mængde i g/ha
     g_ha = jord_tyk * stof_jord
 
     # Konverter g/ha til kg/ha
