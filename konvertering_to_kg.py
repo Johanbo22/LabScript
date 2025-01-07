@@ -6,7 +6,7 @@ def calculate_kg_ha(koncentration, vandindhold, bulk, dybde):
     væske = 250  # i mL
 
     # Udregne hvor meget af stoffet der er i væsken i mg
-    stof_i_væske = koncentration_mg * væske
+    stof_i_væske = koncentration_mg_mL * væske
 
     # Konverter til gram
     stof_g = stof_i_væske / 1000
@@ -43,6 +43,13 @@ def calculate_kg_ha(koncentration, vandindhold, bulk, dybde):
     # Konverter g/ha til kg/ha
     kg_ha = g_ha / 1000
 
-    return f"Restultat er {kg_ha:.2f}"
+    return f"Restultat er {kg_ha:.2f} kg_ha"
 
+# Input 
+koncentration = float(input("Indtast koncentration (mg/mL): "))
+vandindhold = float(input("Indtast vandindhold (%): "))
+bulk = float(input("Indtast volumenvægt (g/cm³): "))
+dybde = int(input("Indtast tykkelsen af jordlaget (cm): "))
 
+result = calculate_kg_ha(koncentration, vandindhold, bulk, dybde)
+print(result)
