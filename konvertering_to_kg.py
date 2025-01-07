@@ -21,7 +21,7 @@ def calculate_kg_ha(koncentration, vandindhold, bulk, dybde):
     # Korrigeret jord for vand vægt
     corr_jord = jord_kg - vand_vægt
 
-    # Koncentration af c i jorden i g/kgjord
+    # Koncentration af stoffet i jorden i g/kgjord
     stof_jord = stof_g / corr_jord
 
     # Volumenvægt konverteres til kg/m^3
