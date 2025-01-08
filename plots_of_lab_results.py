@@ -32,7 +32,7 @@ for col in df:
 def standard_error(x):
     return x.dropna().std() / np.sqrt(len(x.dropna()))
 
-
+# Gruppering af data ud fra dybden og lokation og aggregering af data ud fra gennemsnit og standard error
 grouped_data = data.groupby(["Dybde", "Lokation"]).agg(
     Volumenvægt_mean = ("Volumenvægt (g/cm³)", "mean"),
     Volumenvægt_se = ("Volumenvægt (g/cm³)", standard_error), 
@@ -104,6 +104,7 @@ grouped_data = data.groupby(["Dybde", "Lokation"]).agg(
     Uorganisk_fosfor_se = ("Uorganisk fosfor (kg/ha)", standard_error)
 ).reset_index() # resetter index-værdierne i kolonnerne til [0, 1, 2 osv] fremfor dybde. 
 
+# Eksportering af det grupperede data til en excel fil.
 grouped_data.to_excel('groupeddata_output.excel')
 
 # Funktion til at oprette plots
