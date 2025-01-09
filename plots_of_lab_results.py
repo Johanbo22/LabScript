@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 import numpy as np
 import logging
+from tabulate import tabulate
+import os
 
 #@authors == Johan Bo Kjær && Kasper Boisen Henriques
 
@@ -104,8 +106,15 @@ grouped_data = data.groupby(["Dybde", "Lokation"]).agg(
     Uorganisk_fosfor_se = ("Uorganisk fosfor (kg/ha)", standard_error)
 ).reset_index() # resetter index-værdierne i kolonnerne til [0, 1, 2 osv] fremfor dybde. 
 
-# Eksportering af det grupperede data til en excel fil.
-grouped_data.to_excel('groupeddata_output.excel')
+# En tabel over det grupperede data. 
+table = tabulate(grouped_data, headers="keys", tablefmt="fancy_grid")
+print(table)
+
+# Eksportering af det grupperede data til en ekstern excel fil, hvis der skal bruges data direkte. Denne fil gemmes i cd.
+# Hvis der skal bruges excel fil, så skal nedenstående con være == True.
+gem_data_til_excel = False
+if gem_data_til_excel:
+    grouped_data.to_excel('groupeddata_output.xlsx')
 
 # Funktion til at oprette plots
 def plot_metric_with_depth(data, metric_mean, metric_se, title, xlabel):
