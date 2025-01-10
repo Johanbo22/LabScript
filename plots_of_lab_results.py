@@ -25,8 +25,10 @@ logging.info(data.info())
 logging.info(data.describe())
 
 # List of kolonner der skal konverteres til numeriske værdier
-for col in df:
-    if col in df.columns:
+non_numeric_columns = ["Jordtype"]
+
+for col in df.columns:
+    if col not in non_numeric_columns:
         df[col] = pd.to_numeric(df[col], errors="coerce")
 
 
@@ -80,8 +82,7 @@ grouped_data = data.groupby(["Dybde", "Lokation"]).agg(
     Silt_se = ("Silt", standard_error),
     Ler_mean = ("Ler", "mean"),
     Ler_se = ("Ler", standard_error),
-    Jordtype_mean = ("Jordtype", "mean"),
-    Jordtype_se = ("Jordtype", standard_error),
+    Jordtype_count = ("Jordtype", lambda x: x.value_counts().to_dict()),
     Ombyttelig_Ca_mean = ("Ombyttelig Ca", "mean"),
     Ombyttelig_Ca_se = ("Ombyttelig Ca", standard_error),
     Ombyttelig_Mg_mean = ("Ombyttelig Mg", "mean"),
@@ -171,7 +172,7 @@ def plot_metric_with_depth(data, metric_mean, metric_se, title, xlabel):
             capsize=5 # formattering
         )
     
-    plt.title(title, fontsize=12, pad=5, fontweight="bold") # formattering
+    plt.title(label=title, fontsize=10, fontweight="bold") # formattering
     plt.yticks(ticks=y_positions, labels=y_ticks, rotation=45)
     plt.xlabel(xlabel, fontsize=8, fontweight="bold") # formattering
     plt.ylabel("Dybde (cm)", fontsize=8, fontweight="bold") # formattering
@@ -206,6 +207,61 @@ def plot_metric_with_depth(data, metric_mean, metric_se, title, xlabel):
     plt.tight_layout(rect=[0, 0, 0.75, 1]) # formattering
     plt.show() 
 
+# Funktion til at plotte jordtypen
+def jordtype_plot(grouped_data):
+    jordtype_dybde = grouped_data["Jordtype_count"].apply(pd.Series).fillna(0)
+    jordtype_lokation = grouped_data["Jordtype_count"].apply(pd.Series).fillna(0)
+    
+    jordtype_antal_dybde = jordtype_dybde.groupby(grouped_data["Dybde"]).sum()
+    jordtype_antal_lokation = jordtype_lokation.groupby(grouped_data["Lokation"]).sum()
+    
+    fig, axes = plt.subplots(1, 2, figsize=(10, 6), sharey=False)
+    
+    jordtype_antal_dybde.plot(kind="bar", stacked=False, ax=axes[0], colormap="viridis")
+    axes[0].set_ylabel("Antal", fontsize=8, fontweight="bold")
+    axes[0].set_xlabel("Dybde (cm)", fontsize=8, fontweight="bold")
+    axes[0].legend(title="Jordtype", 
+        loc="upper_left", 
+        fontsize=7,
+        facecolor="#F0F0F0",
+        edgecolor="black",
+        bbox_to_anchor=(0.5, -0.1), 
+        shadow=True, 
+        fancybox=True, 
+        borderpad=1, 
+        labelspacing=1.5, 
+        handlelength=2, 
+        handleheight=1.5, 
+        ncol=3)
+    
+    jordtype_antal_lokation.plot(kind="bar", stacked=True, ax=axes[1], colormap="plasma")
+    axes[1].set_ylabel("Antal", fontsize=8, fontweight="bold")
+    axes[1].set_xlabel("Lokation", fontsize=8, fontweight="bold")
+    axes[1].legend(
+        title="Jordtype", 
+        loc="upper_left", 
+        fontsize=7,
+        facecolor="#F0F0F0",
+        edgecolor="black",
+        bbox_to_anchor=(0.5, -0.1), 
+        shadow=True, 
+        fancybox=True, 
+        borderpad=1, 
+        labelspacing=1.5, 
+        handlelength=2, 
+        handleheight=1.5, 
+        ncol=3)
+    
+    for spine in plt.gca().spines.values(): # formattering af kanten på akserne
+        spine.set_visible(True)
+        spine.set_linewidth(2)
+        spine.set_edgecolor("black")
+    
+    plt.gca().set_facecolor("#F0F0F0")#farven af akse-displayet
+    plt.gca().tick_params(direction="in", which="both")
+    plt.tight_layout()
+    plt.show()
+
 
 # Tilføje de nye metrics når de bliver tilgængelig. (metric, titel, xlabel)
 metrics_to_plot = [("Volumenvægt", "Volumenvægt (g/cm³) per lokation", "Volumenvægt (g/cm³)"),
@@ -230,7 +286,6 @@ metrics_to_plot = [("Volumenvægt", "Volumenvægt (g/cm³) per lokation", "Volum
     ("Sand", "Sand per lokation", "Sand"),
     ("Silt", "Silt per lokation", "Silt"),
     ("Ler", "Ler per lokation", "Ler"),
-    ("Jordtype", "Jordtype per lokation", "Jordtype"),
     ("Ombyttelig_Ca", "Ombyttelig Calcium per lokation", "Ombyttelig Calcium"),
     ("Ombyttelig_Mg", "Ombyttelig Magnesium per lokation", "Ombyttelig Magnesium"),
     ("Ombyttelig_K", "Ombyttelig Kalium per lokation", "Ombyttelig Kalium"),
@@ -244,6 +299,10 @@ metrics_to_plot = [("Volumenvægt", "Volumenvægt (g/cm³) per lokation", "Volum
     ("Uorganisk_fosfor", "Uorganisk fosfor (kg/ha) per lokation", "Uorganisk fosfor (kg/ha)"),
 ]
 
+# plotter ikke jordtype før der er data. 
+plot_jordtype = False # <-- skal ændres til True
+if plot_jordtype:
+    jordtype_plot(grouped_data)
 
 # loop til at plotte hver enkelt undersøgelse
 for metric, title, xlabel in metrics_to_plot:
