@@ -182,7 +182,7 @@ def plot_metric_with_depth(data, metric_mean, metric_se, title, xlabel):
     plt.grid(axis="x", linestyle="--", alpha=0.1, color="#000000")
 
     legend = plt.legend(
-        title="Lokation",
+        title="Lokalitet",
         bbox_to_anchor=(0.5, -0.1),
         loc="upper center",
         fontsize=7,
@@ -236,7 +236,7 @@ def jordtype_plot(grouped_data):
     
     jordtype_antal_lokation.plot(kind="bar", stacked=True, ax=axes[1], colormap="plasma")
     axes[1].set_ylabel("Antal", fontsize=8, fontweight="bold")
-    axes[1].set_xlabel("Lokation", fontsize=8, fontweight="bold")
+    axes[1].set_xlabel("Lokalitet", fontsize=8, fontweight="bold")
     axes[1].legend(
         title="Jordtype", 
         loc="upper_left", 
@@ -300,7 +300,7 @@ metrics_to_plot = [("Volumenvægt", "Volumenvægt (g/cm³) per lokation", "Volum
 ]
 
 # plotter ikke jordtype før der er data. 
-plot_jordtype = False # <-- skal ændres til True
+plot_jordtype = False # <-- skal ændres til True når jordtype data er sandt ind. 
 if plot_jordtype:
     jordtype_plot(grouped_data)
 
