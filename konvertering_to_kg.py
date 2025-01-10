@@ -1,55 +1,84 @@
-def calculate_kg_ha(koncentration, vandindhold, bulk, dybde):
-    # Konvert koncentration til mg/mL
-    koncentration_mg_mL = koncentration / 1000
-
-    # Definer væsken 
-    væske = 250  # i mL
-
-    # Udregne hvor meget af stoffet der er i væsken i mg
-    stof_i_væske = koncentration_mg_mL * væske
-
-    # Konverter til gram
-    stof_g = stof_i_væske / 1000
-
-    # Jordmængden og konverter til kg
-    jord = 10  # i gram
-    jord_kg = jord / 1000
-
-    # Vandets vægt i kg
+# En funktion der udregner stof mængden i kg/ha ud fra en givet stof, koncentration (mg/L), jordmængden (g), vandindhold (%), volumenvægt (g/cm^3) og dybde (cm)
+def calculate_kg_to_ha(stof, koncentration, jordmængde, vandindhold, bulk_density, dybde):
+    # Fælles variabler
+    # jordmængden omregnes fra g til kg
+    jord_kg = jordmængde / 1000
+    
+    # Vægten af vandet i jordmængden
     vand_vægt = jord_kg * (vandindhold / 100)
-
-    # Korrigeret jord for vand vægt
+    
+    # Korrektion af jordmængden for vandvægten
     corr_jord = jord_kg - vand_vægt
-
-    # Koncentration af stoffet i jorden i g/kgjord
-    stof_jord = stof_g / corr_jord
-
-    # Volumenvægt konverteres til kg/m^3
-    bulk_kg = bulk * 1000  # i kg/m³
-
-    # Tykkelsen af jordlagene. Denne tykkelse bliver konverteret til meter.
-    dybde_m = dybde / 100  # i meter
-
-    # Hektar og volumen af tykkelsen givet ud fra hektar.
-    ha = 10000  # i m² 
-    tyk_vol = ha * dybde_m  # i m³
-
-    # mængden af jord i dybde intervallet (tykkelsen)
-    jord_tyk = tyk_vol * bulk_kg  # i kg
-
+    
+    # Volumenvægten i kg/m³
+    bulk_kg = bulk_density * 1000
+    
+    # Tykkelsen af jordlaget i meter
+    dybde_m = dybde / 100
+    
+    # Hektar i m²
+    ha = 10000
+    
+    # Volumen af tykkelsen givet ud fra hektar
+    jord_tyk_vol = ha * dybde_m
+    
+    # Mængden af jord i dybde intervallet (tykkelsen)
+    jord_tyk = jord_tyk_vol * bulk_kg
+    
+    if stof != "P": # Udregner hvis stoffet er C eller N
+        # Koncentrationen omregnes fra mg/L til mg/mL
+        koncentration_mg_ml = koncentration / 1000
+        
+        # Væsken i mL
+        væske = 250
+        
+        # Mængden af stoffet i væsken i mg
+        stof_i_væske = koncentration_mg_ml * væske
+        
+        # Konverter til gram
+        stof_g = stof_i_væske / 1000
+        
+        # Koncentration af stoffet i jorden i g/kgjord 
+        stof_jord = stof_g / corr_jord
+    else: # Udregner hvis stoffet er P
+        # Koncentrationen i cuvette
+        koncentration_cuvette = koncentration * (2.84*10**-3)
+        
+        # Koncentrationen i pipetten
+        koncentration_pipette = koncentration_cuvette / (0.04 * 10**-3)
+        
+        # Koncentrationen i prøve i mg
+        koncentration_prv_mg = koncentration_pipette * 0.025
+        
+        # Koncentrationen i prøve i gram
+        koncentration_prv_g = koncentration_prv_mg / 1000
+        
+        # Koncentration af stoffet i jorden i g/kgjord
+        stof_jord = koncentration_prv_g / corr_jord
+    
     # Total mængde i g/ha
     g_ha = jord_tyk * stof_jord
-
-    # Konverter g/ha til kg/ha
+    # Total mængde i kg/ha
     kg_ha = g_ha / 1000
-
-    return f"Restultat er {kg_ha:.2f} kg_ha"
-
-# Input 
-koncentration = float(input("Indtast koncentration (mg/mL): "))
-vandindhold = float(input("Indtast vandindhold (%): "))
-bulk = float(input("Indtast volumenvægt (g/cm³): "))
-dybde = int(input("Indtast tykkelsen af jordlaget (cm): "))
-
-result = calculate_kg_ha(koncentration, vandindhold, bulk, dybde)
-print(result)
+    
+    if stof == "P":
+        return f"Resultatet er {kg_ha:.4f} kg {stof}/ha"
+    else:
+        return f"Resultatet er {kg_ha:.4f} kg {stof}/ha"
+    
+# Bruger input.
+try:
+    stof = input("Indtast stof (C, N eller P): ").strip().upper()
+    if stof not in ["C", "N", "P"]:
+        raise ValueError("Input stoffet skal være enten 'C', 'N' eller 'P'")
+    koncentration = float(input("Indtast koncentration (mg/mL): "))
+    jordmængde = float(input("Indtast jordmængde (g): "))
+    vandindhold = float(input("Indtast vandindhold (%): "))
+    bulk_density = float(input("Indtast bulk density (g/cm³): "))
+    dybde = int(input("Indtast dybde (cm): "))
+    
+    result = calculate_kg_to_ha(stof, koncentration, jordmængde, vandindhold, bulk_density, dybde)
+    print(result)
+except ValueError as e:
+    print(f"Fejl: {e}")
+    
