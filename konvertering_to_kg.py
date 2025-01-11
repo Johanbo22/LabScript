@@ -1,4 +1,5 @@
 # En funktion der udregner stof mængden i kg/ha ud fra en givet stof, koncentration (mg/L), jordmængden (g), vandindhold (%), volumenvægt (g/cm^3) og dybde (cm)
+
 def calculate_kg_to_ha(stof, koncentration, jordmængde, vandindhold, bulk_density, dybde):
     # Fælles variabler
     # jordmængden omregnes fra g til kg
