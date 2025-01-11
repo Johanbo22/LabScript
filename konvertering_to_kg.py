@@ -41,14 +41,19 @@ def calculate_kg_to_ha(stof, koncentration, jordmængde, vandindhold, bulk_densi
         # Koncentration af stoffet i jorden i g/kgjord 
         stof_jord = stof_g / corr_jord
     else: # Udregner hvis stoffet er P
-        # Koncentrationen i cuvette
-        koncentration_cuvette = koncentration * (2.84*10**-3)
+        # Koncentrationen af cuvette 
+        cuvette_væske = 2.84*10**-3
+        # Koncentrationen af P i cuvetten
+        koncentration_cuvette = koncentration * cuvette_væske
         
         # Koncentrationen i pipetten
-        koncentration_pipette = koncentration_cuvette / (0.04 * 10**-3)
+        pipette_væske = 0.04 * 10**-3
+        # Koncentrationen af P i pipetten.
+        koncentration_pipette = koncentration_cuvette / pipette_væske
         
-        # Koncentrationen i prøve i mg
-        koncentration_prv_mg = koncentration_pipette * 0.025
+        # Koncentrationen i prøve beholderen
+        beholder_væske = 0.025
+        koncentration_prv_mg = koncentration_pipette * beholder_væske
         
         # Koncentrationen i prøve i gram
         koncentration_prv_g = koncentration_prv_mg / 1000
