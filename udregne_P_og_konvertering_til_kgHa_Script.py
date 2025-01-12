@@ -1,10 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt 
 from tabulate import tabulate
+from openpyxl import Workbook
 
 # sætter en con for omkring P skal implementeres
-udregne_P = input("Skal der udrgnes fosfor?(ja/nej): ").strip().upper()
-if udregne_P == "ja"
+udregne_P = input("Skal der udrgnes fosfor koncentrationer? (ja/nej): ").strip().upper()
+if udregne_P == "JA":
     abs_standard = []
     standard_rows = ['Blank', 1, 2, 3, 4, 5]
     for row in standard_rows:
@@ -17,8 +18,9 @@ if udregne_P == "ja"
         sample_id = input("Indtast PrøveID ('done' når færdig): ")
         if sample_id.lower() == "done":
             break
+        sample_type = input(f"Indtast typen af prøven for PrøveID {sample_id} ('uorg' / 'tot'): ")
         abs_value = float(input(f"Indtast absorbans for PrøveID {sample_id}: "))
-        sample_ids.append(sample_id)
+        sample_ids.append((sample_id, sample_type))
         abs_prøve.append(abs_value)
         
     def p_analyse(abs_standard, standard_rows, sample_ids, abs_prøve):
@@ -38,7 +40,9 @@ if udregne_P == "ja"
         plt.scatter(x, y, label="Standardrække", color="blue")
         plt.plot(x, slope * x + intercept, label=f"y = {slope:.4f}x + {intercept:.4f}", color="red")
         plt.xlabel("Koncentration af P (mg/mL)")
+        plt.xlim(0, max(x)*1.1)
         plt.ylabel("AbsStandard")
+        plt.ylim(0, max(y)*1.1)
         plt.title("Standardkurve")
         plt.legend()
         plt.show()
@@ -53,9 +57,12 @@ if udregne_P == "ja"
         for i, p in enumerate(p_koncentration_prøver):
             print(f"{sample_ids[i]}\t\t{abs_prøve[i]}\t\t{p:.3f}")
             
-        uorganisk_p = p_koncentration_prøver[:3] # finder de førte 3 værdier
-        total_p = p_koncentration_prøver[3:] # finder de sidste 3 værdier
+        uorganisk_p = [koncentration for (sample, type), koncentration in zip(sample_ids, p_koncentration_prøver) if type == "uorg"]
+        total_p = [koncentration for (sample, type), koncentration in zip(sample_ids, p_koncentration_prøver) if type == "tot"]
         
+        uorganisk_p = np.array(uorganisk_p)
+        total_p = np.array(total_p)
+
         organisk_p = total_p - uorganisk_p 
         
         koncentrations_af_p = {
@@ -72,6 +79,20 @@ if udregne_P == "ja"
             table_data.append([key,val])
     headers = ["Type Fosfor", "Koncentration (mg/L)"]
     print(tabulate(table_data, headers=headers, tablefmt="fancy_grid"))
+
+    # sender data til excel-fil i CD
+    create_excel_from_table = False
+    if create_excel_from_table:
+        file_name = "fosfor_koncentration.xlsx"
+        wb = Workbook()
+        ws = wb.active
+
+        ws.title = "Fosfor Koncentrationer"
+        ws.append(headers)
+        for row in table_data:
+            ws.append(row)
+        wb.save(file_name)
+
 
 # En funktion der udregner stof mængden i kg/ha ud fra en givet stof, koncentration (mg/L), jordmængden (g), vandindhold (%), volumenvægt (g/cm^3) og dybde (cm)
 def calculate_kg_to_ha(stof, koncentration, jordmængde, vandindhold, bulk_density, dybde):
