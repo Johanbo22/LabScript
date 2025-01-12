@@ -2,13 +2,14 @@ import numpy as np
 import matplotlib.pyplot as plt 
 from tabulate import tabulate
 
-ud_regne_P = input("Skal der udrgnes fosfor?(ja/nej): ")
-if ud_regne_P == "ja".strip().upper():
+# sætter en con for omkring P skal implementeres
+udregne_P = input("Skal der udrgnes fosfor?(ja/nej): ").strip().upper()
+if udregne_P == "ja"
     abs_standard = []
     standard_rows = ['Blank', 1, 2, 3, 4, 5]
     for row in standard_rows:
-        abs_value = float(input(f"Absorbans for standardopløsning {row}: "))
-        abs_standard.append(abs_value)
+        abs_value = float(input(f"Absorbans for standardopløsning {row}: ")) # indtast absorbans
+        abs_standard.append(abs_value) # tilføjer de indtastet værdier til en tom liste
         
     sample_ids = []
     abs_prøve = []
@@ -17,7 +18,6 @@ if ud_regne_P == "ja".strip().upper():
         if sample_id.lower() == "done":
             break
         abs_value = float(input(f"Indtast absorbans for PrøveID {sample_id}: "))
-        
         sample_ids.append(sample_id)
         abs_prøve.append(abs_value)
         
@@ -53,10 +53,10 @@ if ud_regne_P == "ja".strip().upper():
         for i, p in enumerate(p_koncentration_prøver):
             print(f"{sample_ids[i]}\t\t{abs_prøve[i]}\t\t{p:.3f}")
             
-        uorganisk_p = p_koncentration_prøver[:3]
-        total_p = p_koncentration_prøver[3:]
+        uorganisk_p = p_koncentration_prøver[:3] # finder de førte 3 værdier
+        total_p = p_koncentration_prøver[3:] # finder de sidste 3 værdier
         
-        organisk_p = total_p - uorganisk_p
+        organisk_p = total_p - uorganisk_p 
         
         koncentrations_af_p = {
             "uorganisk_p": uorganisk_p.tolist(),
