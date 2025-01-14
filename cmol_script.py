@@ -3,7 +3,7 @@ from tabulate import tabulate
 
 # data fra sheets
 sheet_name = "cmol"
-sheet_id = "1bWl438XsuEo3pdni49HuSWGGhgtX5sEbz-6G18ftBxc"
+sheet_id = "1h7mYkvkY5C6MjakeSv8ZGoMcU_yI_tIsN869vdWr75k"
 url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={sheet_name}"
 
 # data
