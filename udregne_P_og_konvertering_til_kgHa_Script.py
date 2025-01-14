@@ -6,37 +6,40 @@ from openpyxl import Workbook
 # sætter en con for omkring P skal implementeres
 udregne_P = input("Skal der udrgnes fosfor koncentrationer? (ja/nej): ").strip().upper()
 if udregne_P == "JA":
-    abs_standard = []
-    standard_rows = ['Blank', 1, 2, 3, 4, 5]
+    abs_standard = [] # tom liste til input
+    standard_rows = ['Blank', 1, 2, 3, 4, 5] # standardrækken
     for row in standard_rows:
         abs_value = float(input(f"Absorbans for standardopløsning {row}: ")) # indtast absorbans
-        abs_standard.append(abs_value) # tilføjer de indtastet værdier til en tom liste
+        abs_standard.append(abs_value) # tilføjer de indtastet værdier til den tomme liste
         
-    sample_ids = []
-    abs_prøve = []
+    sample_ids = [] # tom liste til input
+    abs_prøve = [] # tom list til input
     while True:
-        sample_id = input("Indtast PrøveID ('done' når færdig): ")
-        if sample_id.lower() == "done":
-            break
+        sample_id = input("Indtast PrøveID ('done' når færdig): ") 
+        if sample_id.lower() == "done": 
+            break # så while-loopet kan afslutte
         sample_type = input(f"Indtast typen af prøven for PrøveID {sample_id} ('uorg' / 'tot'): ")
         abs_value = float(input(f"Indtast absorbans for PrøveID {sample_id}: "))
         sample_ids.append((sample_id, sample_type))
         abs_prøve.append(abs_value)
         
     def p_analyse(abs_standard, standard_rows, sample_ids, abs_prøve):
-        p_koncentration = 2
-        p_koncentration_mg_ml = p_koncentration / 1000
+        p_koncentration = 2 # koncentrationen af P i mg/L i P-standarden
+        p_koncentration_mg_ml = p_koncentration / 1000 # konvertering til mg/ml
         
-        total_væske = 2.84
-        p_standard_væske = np.array([0.0, 0.1, 0.3, 0.5, 0.7, 0.9])
-        
+        total_væske = 2.84 # den totale væske i cuvetten
+        p_standard_væske = np.array([0.0, 0.1, 0.3, 0.5, 0.7, 0.9]) # mænngden af p_standard i standardrækkerne
+
+        # den samlede mængde p i hver standardrække
         p_mængde_ml_standard = (p_standard_væske * p_koncentration_mg_ml) / total_væske
-        
+
+        # numpy arrays til at kunne arbejde med lister figurativt og matematisk
         x = np.array(p_mængde_ml_standard)
         y = np.array(abs_standard)
         coefficients = np.polyfit(x, y, 1)
         slope, intercept = coefficients
-        
+
+        # regressionsplotttet for figuren. 
         plt.scatter(x, y, label="Standardrække", color="blue")
         plt.plot(x, slope * x + intercept, label=f"y = {slope:.4f}x + {intercept:.4f}", color="red")
         plt.xlabel("Koncentration af P (mg/mL)")
@@ -46,23 +49,28 @@ if udregne_P == "JA":
         plt.title("Standardkurve")
         plt.legend()
         plt.show()
-        
+
+        # ligningen for plottet
         print(f"Lineær regression: y = {slope:.4f}x + {intercept:.4f}")
-        
+
+        # egne prøver absorbans
         abs_prøve = np.array(abs_prøve)
-        p_koncentration_prøver = ((abs_prøve - intercept) / slope) * 1000
+        p_koncentration_prøver = ((abs_prøve - intercept) / slope) * 1000 # koncentrationen af p udfra standardrækken. 
         
         print("\nData")
         print("PrøveID\t\tAbsPrøve\t\tKoncentration (mg/L)")
         for i, p in enumerate(p_koncentration_prøver):
             print(f"{sample_ids[i]}\t\t{abs_prøve[i]}\t\t{p:.3f}")
-            
+
+        # giver hver type af p
         uorganisk_p = [koncentration for (sample, type), koncentration in zip(sample_ids, p_koncentration_prøver) if type == "uorg"]
         total_p = [koncentration for (sample, type), koncentration in zip(sample_ids, p_koncentration_prøver) if type == "tot"]
-        
+
+        # konvertering til en numpy array
         uorganisk_p = np.array(uorganisk_p)
         total_p = np.array(total_p)
 
+        # mængden af organisk p
         organisk_p = total_p - uorganisk_p 
         
         koncentrations_af_p = {
@@ -72,6 +80,7 @@ if udregne_P == "JA":
         
         return koncentrations_af_p
 
+    # printes i en tabel
     koncentrations_af_p = p_analyse(abs_standard, standard_rows, sample_ids, abs_prøve)
     table_data = []
     for key, values in koncentrations_af_p.items():
@@ -86,7 +95,6 @@ if udregne_P == "JA":
         file_name = "fosfor_koncentration.xlsx"
         wb = Workbook()
         ws = wb.active
-
         ws.title = "Fosfor Koncentrationer"
         ws.append(headers)
         for row in table_data:
