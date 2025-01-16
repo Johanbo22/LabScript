@@ -37,7 +37,7 @@ def standard_error(x):
     return x.dropna().std() / np.sqrt(len(x.dropna()))
 
 # Gruppering af data ud fra dybden og lokation og aggregering af data ud fra gennemsnit og standard error
-grouped_data = data.groupby(["Dybde", "Lokation"]).agg(
+grouped_data = data.groupby(["Dybde", "Lokalitet"]).agg(
     Volumenvægt_mean = ("Volumenvægt (g/cm³)", "mean"),
     Volumenvægt_se = ("Volumenvægt (g/cm³)", standard_error), 
     Porøsitet_mean = ("Porøsitet (%)", "mean"),
@@ -126,7 +126,11 @@ def plot_metric_with_depth(data, metric_mean, metric_se, title, xlabel):
 
     # liste of forskellige markører og farver. Der kan tilføjes flere farver hvis det er nødvendigt.
     markers = ["^", "x", "v"]
-    colors = ["darkblue", "darkred", "darkgreen"]
+    colors = ["#377eb8", "#ff7f00", "#4daf4a"]
+    #CB_color_cycle = ['#377eb8', '#ff7f00', '#4daf4a', # colormap fra matplotlibs tableau-10 skulle være god til farveblinde. 
+    #              '#f781bf', '#a65628', '#984ea3', ¤ hvis vi skal have flere i samme graf. 
+    #             '#999999', '#e41a1c', '#dede00']
+    
     linestyles = ["dashed", "dashdot", "dotted"]
     
     y_ticks = ["0.5", "15-20", "45-50"]
@@ -134,13 +138,13 @@ def plot_metric_with_depth(data, metric_mean, metric_se, title, xlabel):
    
     # Koordinater for y-akserne for hver linje
     shift_map = {
-        "Brak": 0.07,
-        "Midt": 0.0,
-        "Top": -0.07
+        "Brakmark (Bund)": 0.07,
+        "Dyrket mark (Midt)": 0.0,
+        "Dyrket mark (Top)": -0.07
     }
 
-    for i, location in enumerate(data["Lokation"].unique()):
-        subset = data[data["Lokation"] == location] # For-loopet itererer over "lokationer" i kolonnen "lokationer" og finder alle værdier i andre kolonner hvor hver lokation og deler dem op i subsets eg. [Brak: Value], [Midt: Value], [Top: Value]. 
+    for i, location in enumerate(data["Lokalitet"].unique()):
+        subset = data[data["Lokalitet"] == location] # For-loopet itererer over "lokationer" i kolonnen "lokationer" og finder alle værdier i andre kolonner hvor hver lokation og deler dem op i subsets eg. [Brak: Value], [Midt: Value], [Top: Value]. 
         # Enumerate giver index og værdi for hvert element i kolonnerne.
         
         # Dette rykker y-akse værdierne 
@@ -157,7 +161,7 @@ def plot_metric_with_depth(data, metric_mean, metric_se, title, xlabel):
             label=location, # formattering
             linestyle=linestyles[i % len(linestyles)], # formattering
             linewidth=2, # formattering
-            alpha=0.8
+            alpha=1.0
         )
 
         # dette er errorbars 
@@ -179,7 +183,7 @@ def plot_metric_with_depth(data, metric_mean, metric_se, title, xlabel):
     plt.gca().invert_yaxis() # Ændring af yaksens retning
     plt.gca().set_facecolor("#F0F0F0")#farven af akse-displayet
     plt.gca().tick_params(direction="in", which="both")
-    plt.grid(axis="x", linestyle="--", alpha=0.1, color="#000000")
+    plt.grid(axis="x", linestyle="--", alpha=0.2, color="#000000")
 
     legend = plt.legend(
         title="Lokalitet",
@@ -213,7 +217,7 @@ def jordtype_plot(grouped_data):
     jordtype_lokation = grouped_data["Jordtype_count"].apply(pd.Series).fillna(0)
     
     jordtype_antal_dybde = jordtype_dybde.groupby(grouped_data["Dybde"]).sum()
-    jordtype_antal_lokation = jordtype_lokation.groupby(grouped_data["Lokation"]).sum()
+    jordtype_antal_lokation = jordtype_lokation.groupby(grouped_data["Lokalitet"]).sum()
     
     fig, axes = plt.subplots(1, 2, figsize=(10, 6), sharey=False)
     
