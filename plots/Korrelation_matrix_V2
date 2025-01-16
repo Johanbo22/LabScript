@@ -1,0 +1,52 @@
+# Importering af nødvendige biblioteker
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+
+# Import af data fra Google Sheets
+sheet_name = "Resultater_Lab"
+sheet_id = "1h7mYkvkY5C6MjakeSv8ZGoMcU_yI_tIsN869vdWr75k"  # Unik Google Sheets ID
+url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={sheet_name}"
+data = pd.read_csv(url, decimal=",")
+
+# Udvælg kun numeriske kolonner for korrelationsberegning
+numerical_data = data.select_dtypes(include=[np.number])
+
+# Udregn korrelationsmatrixen
+correlation_matrix = numerical_data.corr()
+
+# Visualisering af korrelationsmatrix med korrekt placerede etiketter
+plt.figure(figsize=(20, 18))  # Figurstørrelse
+plt.title("Korrelationsmatrix mellem parametre", fontsize=24)  
+
+# Lav heatmap med korrekte korrelationsværdier og etiketter
+sns.heatmap(
+    correlation_matrix,
+    annot=True,                # Vis korrelationsværdier i cellerne
+    fmt=".1f",                 # Én decimal for at gøre det mere kompakt
+    cmap="coolwarm",           # Farveskala
+    cbar_kws={"label": "Korrelationskoefficient"},  # Label til farveskalabar
+    square=True,               # Kvadratiske celler
+    annot_kws={"size": 12},    # Tekststørrelse for annoteringer
+    xticklabels=correlation_matrix.columns,  # Cellerne matcher kolonnenavne
+    yticklabels=correlation_matrix.columns
+)
+
+# Justerer placeringen af etiketterne
+plt.xticks(
+    rotation=45,              # Roterer etiketterne for at give plads
+    fontsize=12,              # Justerer skriftstørrelsen
+    ha='right'                # Justerer placeringen til højre for mere præcision
+)
+plt.yticks(
+    fontsize=12,              # Justerer skriftstørrelsen
+    rotation=0,               # Holder etiketterne lodrette
+    va='center'               # Centrer lodret justering
+)
+
+# Tilpasser layout for at sikre, at alle etiketter og heatmap vises korrekt
+plt.tight_layout()
+
+# Vis plottet
+plt.show()
