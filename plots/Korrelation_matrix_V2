@@ -1,3 +1,5 @@
+#Hey Johan, dette er en opdateret matrix som viser en talværdi for korrelationen inde i selve matrixen.
+
 # Importering af nødvendige biblioteker
 import pandas as pd
 import matplotlib.pyplot as plt
