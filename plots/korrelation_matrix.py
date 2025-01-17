@@ -1,5 +1,4 @@
-# Hej Kasper
-# Her er code cellen til dit script
+# Opdateret matrix som viser en talværdi for korrelationen inde i selve matrixen.
 
 # Importering af biblioteker
 import pandas as pd
