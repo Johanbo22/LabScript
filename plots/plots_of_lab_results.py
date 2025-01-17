@@ -126,7 +126,7 @@ def plot_metric_with_depth(data, metric_mean, metric_se, title, xlabel):
 
     # liste of forskellige markører og farver. Der kan tilføjes flere farver hvis det er nødvendigt.
     markers = ["^", "x", "v"]
-    colors = ["#377eb8", "#ff7f00", "#4daf4a"]
+    colors = ["#106ab5", "#ff7f00", "#1b8f17"]
     #CB_color_cycle = ['#377eb8', '#ff7f00', '#4daf4a', # colormap fra matplotlibs tableau-10 skulle være god til farveblinde. 
     #              '#f781bf', '#a65628', '#984ea3', ¤ hvis vi skal have flere i samme graf. 
     #             '#999999', '#e41a1c', '#dede00']
