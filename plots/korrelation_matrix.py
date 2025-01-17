@@ -19,24 +19,49 @@ url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sh
 
 data = pd.read_csv(url, decimal=",")
 
-
-
-#Korrelationsmatrix:
+# Opgraderet Korrelationsmatrix:
 # Udvælg kun numeriske kolonner for korrelationsberegning
 numerical_data = data.select_dtypes(include=[np.number])
 
 # Udregn korrelationsmatrixen
 correlation_matrix = numerical_data.corr()
 
-# Visualisering af korrelation som et heatmap
-plt.figure(figsize=(12, 10))
-plt.title("Korrelationsmatrix mellem parametre", fontsize=16)
-plt.imshow(correlation_matrix, cmap="coolwarm", interpolation="none", aspect="auto")
-plt.colorbar(label="Korrelationskoefficient")
-plt.xticks(range(len(correlation_matrix.columns)), correlation_matrix.columns, rotation=90, fontsize=10)
-plt.yticks(range(len(correlation_matrix.columns)), correlation_matrix.columns, fontsize=10)
+# Visualisering af korrelationsmatrix med korrekt placerede etiketter
+plt.figure(figsize=(20, 18))  # Figurstørrelse
+plt.title("Korrelationsmatrix mellem parametre", fontsize=24)  
+
+# Heatmap med korrekte korrelationsværdier og etiketter
+sns.heatmap(
+    correlation_matrix,
+    annot=True,                # Viser korrelationsværdier i cellerne
+    fmt=".1f",                 # Én decimal for at gøre det mere kompakt
+    cmap="coolwarm",           # Farveskala
+    cbar_kws={"label": "Korrelationskoefficient"},  # Label til farveskalabar
+    square=True,               # Kvadratiske celler
+    annot_kws={"size": 12},    # Tekststørrelse for annoteringer
+    xticklabels=correlation_matrix.columns,  # Cellerne matcher kolonnenavne
+    yticklabels=correlation_matrix.columns
+)
+
+# Justerer placeringen af etiketterne
+plt.xticks(
+    rotation=45,              # Roterer etiketterne for at give plads
+    fontsize=12,              # Justerer skriftstørrelsen
+    ha='right'                # Justerer placeringen til højre for mere præcision
+)
+plt.yticks(
+    fontsize=12,              # Justerer skriftstørrelsen
+    rotation=0,               # Holder etiketterne lodrette
+    va='center'               # Centrer lodret justering
+)
+
+# Tilpasser layout for at sikre, at alle etiketter og heatmap vises korrekt
 plt.tight_layout()
+
+# Vis plottet
 plt.show()
+
+
 
 # Plot af udvalgt korrelation: 
 # Funktion til scatterplots med regressionslinje og ligning/r^2
