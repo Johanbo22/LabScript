@@ -1,0 +1,58 @@
+# Importering af biblioteker
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from statsmodels.stats.multicomp import pairwise_tukeyhsd
+
+# Import af data fra Google Sheets
+sheet_name = "Resultater_Lab"
+sheet_id = "1h7mYkvkY5C6MjakeSv8ZGoMcU_yI_tIsN869vdWr75k"  # Unik Google Sheets ID
+url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={sheet_name}"
+
+data = pd.read_csv(url, decimal=",")
+
+# Fjern manglende data og forbered analyser
+ph_data = data[["pH H2O", "Lokalitet"]].dropna()
+porosity_data = data[["Porøsitet (%)", "Lokalitet"]].dropna()
+
+# Tukey's HSD test for pH vs. lokalitet
+tukey_ph = pairwise_tukeyhsd(
+    endog=ph_data["pH H2O"],
+    groups=ph_data["Lokalitet"],
+    alpha=0.05
+)
+
+# Tukey's HSD test for porøsitet vs. lokalitet
+tukey_porosity = pairwise_tukeyhsd(
+    endog=porosity_data["Porøsitet (%)"],
+    groups=porosity_data["Lokalitet"],
+    alpha=0.05
+)
+
+# Visualisering af Tukey's HSD test for pH
+plt.figure(figsize=(10, 6))
+tukey_ph.plot_simultaneous()
+plt.title("Tukey's HSD Test for pH vs. Lokalitet")
+plt.xlabel("pH H2O")
+plt.show()
+
+# Visualisering af Tukey's HSD test for porøsitet
+plt.figure(figsize=(10, 6))
+tukey_porosity.plot_simultaneous()
+plt.title("Tukey's HSD Test for Porøsitet vs. Lokalitet")
+plt.xlabel("Porøsitet (%)")
+plt.show()
+
+# Opsummer resultater i tabelformat
+tukey_ph_summary = tukey_ph.summary()
+tukey_porosity_summary = tukey_porosity.summary()
+
+# Udskriv resultater
+def print_tukey_summary(summary, title):
+    print(f"\n{'-'*len(title)}")
+    print(title)
+    print(f"{'-'*len(title)}")
+    print(summary)
+
+print_tukey_summary(tukey_ph_summary, "Tukey's HSD Test for pH vs. Lokalitet")
+print_tukey_summary(tukey_porosity_summary, "Tukey's HSD Test for Porøsitet vs. Lokalitet")
