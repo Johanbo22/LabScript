@@ -19,10 +19,16 @@ url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sh
 data = pd.read_csv(url, decimal=",")
 df = pd.DataFrame(data)
 
+excel_df = False
+if excel_df:
+    df.to_excel("df.xlsx")
+
 # Denne giver lidt informationer omkring det data vi har. 
-logging.info("Data Info")
-logging.info(data.info())
-logging.info(data.describe())
+log = False
+if log: 
+    logging.info("Data Info")
+    logging.info(data.info())
+    logging.info(data.describe())
 
 # List of kolonner der skal konverteres til numeriske værdier
 non_numeric_columns = ["Jordtype"]
@@ -46,8 +52,10 @@ grouped_data = data.groupby(["Dybde", "Lokalitet"]).agg(
     Vandindhold_se = ("Volumetrisk Vandindhold (%)", standard_error),
     gravimetrisk_mean = ("Gravimetrisk vandindhold (%)", "mean"),
     gravimetrisk_se = ("Gravimetrisk vandindhold (%)", standard_error),
-    TOC_mean = ("Indhold af organisk kulstof (%)", "mean"),
-    TOC_se = ("Indhold af organisk kulstof (%)", standard_error),
+    TOC_mean = ("Indhold af organisk stof (%)", "mean"),
+    TOC_se = ("Indhold af organisk stof (%)", standard_error),
+    kulstof_mean = ("Indhold af kulstof (%)", "mean"),
+    kulstof_se = ("Indhold af kulstof (%)", standard_error),
     pH_H2O_mean = ("pH H2O", "mean"),
     pH_H2O_se = ("pH H2O", standard_error),
     pH_cacl2_mean = ("pH CaCl2", "mean"),
@@ -118,28 +126,24 @@ if gem_data_til_excel:
     grouped_data.to_excel('groupeddata_output.xlsx')
 
 # Funktion til at oprette plots
-def plot_metric_with_depth(data, metric_mean, metric_se, title, xlabel):
+def plot_metric_with_depth(data, metric_mean, metric_se, title, xlabel, show_ylabel=True, show_yticks=True):
     plt.rcParams['font.family'] = 'DeJavu Serif'
     plt.rcParams['font.serif'] = 'Times New Roman'
     
-    plt.figure(figsize=(10, 6), facecolor="#FFFFFF") # størrelsen og farven af figuren
+    plt.figure(figsize=(8, 4), facecolor="white") # størrelsen og farven af figuren
 
     # liste of forskellige markører og farver. Der kan tilføjes flere farver hvis det er nødvendigt.
     markers = ["^", "x", "v"]
     colors = ["#106ab5", "#ff7f00", "#1b8f17"]
-    #CB_color_cycle = ['#377eb8', '#ff7f00', '#4daf4a', # colormap fra matplotlibs tableau-10 skulle være god til farveblinde. 
-    #              '#f781bf', '#a65628', '#984ea3', ¤ hvis vi skal have flere i samme graf. 
-    #             '#999999', '#e41a1c', '#dede00']
-    
     linestyles = ["dashed", "dashdot", "dotted"]
     
-    y_ticks = ["0.5", "15-20", "45-50"]
+    y_ticks = ["0-5", "15-20", "45-50"]
     y_positions = np.array([1, 2, 3])
    
     # Koordinater for y-akserne for hver linje
     shift_map = {
         "Brakmark (Bund)": 0.07,
-        "Dyrket mark (Midt)": 0.0,
+        "Dyrket mark (Bund)": 0.0,
         "Dyrket mark (Top)": -0.07
     }
 
@@ -176,95 +180,45 @@ def plot_metric_with_depth(data, metric_mean, metric_se, title, xlabel):
             capsize=5 # formattering
         )
     
-    plt.title(label=title, fontsize=10, fontweight="bold") # formattering
-    plt.yticks(ticks=y_positions, labels=y_ticks, rotation=45)
-    plt.xlabel(xlabel, fontsize=8, fontweight="bold") # formattering
-    plt.ylabel("Dybde (cm)", fontsize=8, fontweight="bold") # formattering
+    plt.xlabel(xlabel, fontsize=10) # formattering
+    plt.yticks(ticks=y_positions, labels=y_ticks, rotation=0)
     plt.gca().invert_yaxis() # Ændring af yaksens retning
-    plt.gca().set_facecolor("#F0F0F0")#farven af akse-displayet
-    plt.gca().tick_params(direction="in", which="both")
-    plt.grid(axis="x", linestyle="--", alpha=0.2, color="#000000")
+    plt.gca().set_facecolor("white")#farven af akse-displayet
+    plt.gca().tick_params(direction="out", which="both")
+    
+    # denne tjekker om show_ylabels == True, hvis den ikke, som index, er i listen i forloop til sidst så vil der blive lavet en ny ylabel som er hvid, så dermed usynlig. 
+    if show_ylabel:
+        plt.ylabel("Dybde (cm)", fontsize=10)
+    else:
+        plt.ylabel("Dybde (cm)", fontsize=10, color="white")
+
+    
 
     legend = plt.legend(
-        title="Lokalitet",
-        bbox_to_anchor=(0.5, -0.1),
-        loc="upper center",
-        fontsize=7,
+        loc="best",
+        fontsize=8,
         title_fontsize=8,
-        frameon=True,
-        facecolor="#F0F0F0",
+        frameon=False,
+        facecolor="white",
         edgecolor="black",
-        shadow=True,
-        fancybox=True,
+        shadow=False,
+        fancybox=False,
         borderpad=1,
-        labelspacing=1.5,
+        labelspacing=1.0,
         handlelength=2,
-        handleheight=1.5,
-        ncol=3 # antal kolonner til legend
+        handleheight=1, 
+        ncol=1 # antal kolonner til legend
     )
 
     for spine in plt.gca().spines.values(): # formattering af kanten på akserne
         spine.set_visible(True)
-        spine.set_linewidth(2)
+        spine.set_linewidth(0.5)
         spine.set_edgecolor("black")
 
+    
     plt.tight_layout(rect=[0, 0, 0.75, 1]) # formattering
     plt.show() 
 
-# Funktion til at plotte jordtypen
-def jordtype_plot(grouped_data):
-    jordtype_dybde = grouped_data["Jordtype_count"].apply(pd.Series).fillna(0)
-    jordtype_lokation = grouped_data["Jordtype_count"].apply(pd.Series).fillna(0)
-    
-    jordtype_antal_dybde = jordtype_dybde.groupby(grouped_data["Dybde"]).sum()
-    jordtype_antal_lokation = jordtype_lokation.groupby(grouped_data["Lokalitet"]).sum()
-    
-    fig, axes = plt.subplots(1, 2, figsize=(10, 6), sharey=False)
-    
-    jordtype_antal_dybde.plot(kind="bar", stacked=False, ax=axes[0], colormap="viridis")
-    axes[0].set_ylabel("Antal", fontsize=8, fontweight="bold")
-    axes[0].set_xlabel("Dybde (cm)", fontsize=8, fontweight="bold")
-    axes[0].legend(title="Jordtype", 
-        loc="upper_left", 
-        fontsize=7,
-        facecolor="#F0F0F0",
-        edgecolor="black",
-        bbox_to_anchor=(0.5, -0.1), 
-        shadow=True, 
-        fancybox=True, 
-        borderpad=1, 
-        labelspacing=1.5, 
-        handlelength=2, 
-        handleheight=1.5, 
-        ncol=3)
-    
-    jordtype_antal_lokation.plot(kind="bar", stacked=True, ax=axes[1], colormap="plasma")
-    axes[1].set_ylabel("Antal", fontsize=8, fontweight="bold")
-    axes[1].set_xlabel("Lokalitet", fontsize=8, fontweight="bold")
-    axes[1].legend(
-        title="Jordtype", 
-        loc="upper_left", 
-        fontsize=7,
-        facecolor="#F0F0F0",
-        edgecolor="black",
-        bbox_to_anchor=(0.5, -0.1), 
-        shadow=True, 
-        fancybox=True, 
-        borderpad=1, 
-        labelspacing=1.5, 
-        handlelength=2, 
-        handleheight=1.5, 
-        ncol=3)
-    
-    for spine in plt.gca().spines.values(): # formattering af kanten på akserne
-        spine.set_visible(True)
-        spine.set_linewidth(2)
-        spine.set_edgecolor("black")
-    
-    plt.gca().set_facecolor("#F0F0F0")#farven af akse-displayet
-    plt.gca().tick_params(direction="in", which="both")
-    plt.tight_layout()
-    plt.show()
 
 
 # Tilføje de nye metrics når de bliver tilgængelig. (metric, titel, xlabel)
@@ -272,42 +226,50 @@ metrics_to_plot = [("Volumenvægt", "Volumenvægt (g/cm³) per lokation", "Volum
     ("Porøsitet", "Porøsitet (%) per Lokation", "Porøsitet (%)"),
     ("Vandindhold", "Volumetrisk Vandindhold (%) per Lokation", "Volumetrisk Vandindhold (%)"),
     ("gravimetrisk", "Gravimetrisk vandindhold (%) per Lokation", "Gravimetrisk vandindhold (%)"),
-    ("TOC", "Indhold af organisk kulstof (%) per Lokation", "Indhold af organisk kulstof (%)"),
+    ("TOC", "Indhold af organisk kulstof (%) per Lokation", "Indhold af organisk stof (%)"),
+    ("kulstof", "Indhold af kulstof (%)", "Indhold af kulstof (%)"),
     ("pH_H2O", "pH H2O per Lokation", "pH H2O"),
     ("pH_cacl2", "pH CaCl2 per Lokation", "pH CaCl2"),
     ("Ledningsevne", "Ledningsevne (µS/cm) per Lokation", "Ledningsevne (µS/cm)"),
     ("Reaktionstal", "Reaktionstal per Lokation", "Reaktionstal"),
-    ("CO2_produktion", "CO2 produktion (ppm) per Lokation", "CO2 produktion (ppm)"),
+    ("CO2_produktion", "CO2 produktion (ppm) per Lokation", "CO2 produktion (µg CO₂-C g⁻¹ t⁻¹)"),
     ("Opløst_kulstof", "Opløst oganisk kulstof (mg/L) per Lokation", "Opløst organisk kulstof (mg/L)"),
     ("Opløst_kvælstof", "Opløst organisk kvælstof (mg/L) per Lokation", "Opløst organisk kvælstof (mg/L)"),
     ("Opløst_org_kulstof", "Opløst organisk kulstof (kg/ha) per lokation", "Opløst organisk kulstof (kg/ha)"),
     ("Opløst_org_kvælstof", "Opløst organisk kvælstof (kg/ha) per lokation", "Opløst organisk kvælstof (kg/ha)"),
-    ("Organisk_kulstof_TOC", "Organisk kulstof TOC per lokation", "Organisk kulstof TOC"),
-    ("Organisk_kvælstof_TON", "Organisk kvælstof TON per lokation", "Organisk kvælstof TON"),
+    ("Organisk_kulstof_TOC", "Organisk kulstof TOC per lokation", "Organisk kulstof TOC (%)"),
+    ("Organisk_kvælstof_TON", "Organisk kvælstof TON per lokation", "Organisk kvælstof TON (%)"),
     ("Organisk_kulstof", "Organisk kulstof (kg/ha) per lokation", "Organisk kulstof (kg/ha)"),
     ("Organisk_kvælstof", "Organisk kvælstof (kg/ha) per lokation", "Organisk kvælstof (kg/ha)"),
     ("CN_forhold", "C/N forhold per lokation", "C/N forhold"),
-    ("Sand", "Sand per lokation", "Sand"),
-    ("Silt", "Silt per lokation", "Silt"),
-    ("Ler", "Ler per lokation", "Ler"),
-    ("Ombyttelig_Ca", "Ombyttelig Calcium per lokation", "Ombyttelig Calcium"),
-    ("Ombyttelig_Mg", "Ombyttelig Magnesium per lokation", "Ombyttelig Magnesium"),
-    ("Ombyttelig_K", "Ombyttelig Kalium per lokation", "Ombyttelig Kalium"),
-    ("Ombyttelig_Na", "Ombyttelig Natrium per lokation", "Ombyttelig Natrium"),
-    ("Ombyttelig_Mn", "Ombyttelig Manganese per lokation", "Ombyttelig Manganese"),
-    ("Ombyttelig_H", "Ombyttelig Hydrogen per lokation", "Ombytteig Hydrogen"),
-    ("Ombyttelig_Al", "Ombyttelig Aluminium per lokation", "Ombyttelig Aluminium"),
-    ("CEC", "Kationudskiftningspotentiale per lokation", "CEC"),
-    ("Basemætningsgrad", "Basemætningsgrad per lokation", "Basemætningsgrad"),
+    ("Sand", "Sand per lokation", "Sand (%)"),
+    ("Silt", "Silt per lokation", "Silt (%)"),
+    ("Ler", "Ler per lokation", "Ler (%)"),
+    ("Ombyttelig_Ca", "Ombyttelig Calcium per lokation", "Ombyttelig Calcium (cmol(+)/kg)"),
+    ("Ombyttelig_Mg", "Ombyttelig Magnesium per lokation", "Ombyttelig Magnesium (cmol(+)/kg)"),
+    ("Ombyttelig_K", "Ombyttelig Kalium per lokation", "Ombyttelig Kalium (cmol(+)/kg)"),
+    ("Ombyttelig_Na", "Ombyttelig Natrium per lokation", "Ombyttelig Natrium (cmol(+)/kg)"),
+    ("Ombyttelig_Mn", "Ombyttelig Mangan per lokation", "Ombyttelig Mangan (cmol(+)/kg)"),
+    ("Ombyttelig_H", "Ombyttelig Hydrogen per lokation", "Ombytteig Hydrogen (cmol(+)/kg)"),
+    ("Ombyttelig_Al", "Ombyttelig Aluminium per lokation", "Ombyttelig Aluminium (cmol(+)/kg)"),
+    ("CEC", "Kationudskiftningspotentiale per lokation", "CEC (cmol(+)/kg)"),
+    ("Basemætningsgrad", "Basemætningsgrad per lokation", "Basemætningsgrad (%)"),
     ("Organisk_fosfor", "Organisk fosfor (kg/ha) per lokation", "Organisk fosfor (kg/ha)"),
     ("Uorganisk_fosfor", "Uorganisk fosfor (kg/ha) per lokation", "Uorganisk fosfor (kg/ha)"),
 ]
 
-# plotter ikke jordtype før der er data. 
-plot_jordtype = False # <-- skal ændres til True når jordtype data er sandt ind. 
-if plot_jordtype:
-    jordtype_plot(grouped_data)
+plots_with_labels = []
 
 # loop til at plotte hver enkelt undersøgelse
-for metric, title, xlabel in metrics_to_plot:
-    plot_metric_with_depth(grouped_data, f"{metric}_mean", f"{metric}_se", title, xlabel)
+for i, (metric, title, xlabel) in enumerate(metrics_to_plot):
+    show_labels = i in plots_with_labels
+    plot_metric_with_depth(
+                           grouped_data, 
+                           f"{metric}_mean", 
+                           f"{metric}_se", 
+                           title, 
+                           xlabel,
+                           show_ylabel=True,
+                           show_yticks=True)
+
+
