@@ -5,6 +5,7 @@ def pdf_anslag(pdf_path, startside, slutside):
         with open(pdf_path, 'rb') as pdf_file:
             reader = PyPDF2.PdfReader(pdf_file)
 
+            # tom streng
             text= ""
 
             # indlæser sidetalet
@@ -14,7 +15,7 @@ def pdf_anslag(pdf_path, startside, slutside):
                 else:
                     print(f"Advarsel: Sidetallet {page_number + 1} findes ikk i PDF")
             
-            # 
+            # antallet af tegn
             character_count = len(text)
 
             return character_count
@@ -25,16 +26,18 @@ def pdf_anslag(pdf_path, startside, slutside):
     
 
 if __name__ == "__main__":
-    pdf_path = r""
+    pdf_path = r"" # stien til pdf-filen
     try: 
         startside = int(input("indtast startside: "))
         slutside = int(input("indtast slutside: "))
 
-        character_count = pdf_anslag(pdf_path, startside, slutside)
+        character_count = pdf_anslag(pdf_path, startside, slutside) # antallet af tegn fra funktionen
+        antal_sider = character_count / 2400 # for at få antal normalsider
 
         if character_count is not None:
             print("-------------------------------------------------------------------")
             print(f"Antal anslag i Pdf fra side {startside} til {slutside} er: {character_count}")
+            print(f"Antallet af sider: {antal_sider}")
             print("-------------------------------------------------------------------")
     except ValueError:
         print(f"indtast korrekte sidetal")
