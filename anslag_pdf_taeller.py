@@ -1,9 +1,16 @@
 import PyPDF2
 
+# script til at tælle anslag i en pdf-fil
 def pdf_anslag(pdf_path, startside, slutside):
+    """
+    Denne funktion tager tre argumenter:
+    pdf_path = stien til pdf filen
+    startside = den side du gerne vil starte fra
+    slutside = den side du gerne vil slutte med at tælle.
+    """
     try:
         with open(pdf_path, 'rb') as pdf_file:
-            reader = PyPDF2.PdfReader(pdf_file)
+            reader = PyPDF2.PdfReader(pdf_file) # læser pdf
 
             text= ""
 
@@ -37,8 +44,8 @@ def pdf_anslag(pdf_path, startside, slutside):
 if __name__ == "__main__":
     pdf_path = r"C:\Users\joha4\OneDrive\Skrivebord_LapTop\Bachelorprojekt\Python\Rapport_til_geolab.pdf"
     try:
-        startside = int(input("Indtast startside: "))
-        slutside = int(input("Indtast slutside: "))
+        startside = int(input("Indtast startside: ")) # brugerindtastning
+        slutside = int(input("Indtast slutside: ")) # brugerindtastning
 
         if startside <= 0 or slutside <= 0:
             print(f"Startside og slutside skal være større end 0")
@@ -54,6 +61,6 @@ if __name__ == "__main__":
                 print(f"Antallet af sider (afrundet): {antal_sider:.2f} normalsider")
                 print("-------------------------------------------------------------------")
     except ValueError:
-        print("Fejl: Indtast venligst gyldige heltal for start- og slutsider.")
+        print("Fejl: Indtast gyldige heltal for start- og slutsider.")
 
                 
