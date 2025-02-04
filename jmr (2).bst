@@ -1,21 +1,4 @@
-% BibTeX standard bibliography style `jmr' (one of the harvard family)
-	% version 0.99a for BibTeX versions 0.99a or later, LaTeX version 2.09.
-	% Copyright (C) 1991, all rights reserved.
-	% Copying of this file is authorized only if either
-	% (1) you make absolutely no changes to your copy, including name, or
-	% (2) if you do make changes, you name it something other than
-	% btxbst.doc, plain.bst, unsrt.bst, alpha.bst, abbrv.bst, agsm.bst,
-        % dcu.bst or kluwer.bst, jmr.bst.
-	% This restriction helps ensure that all standard styles are identical.
-	% The file harvard.tex has the documentation for this style.
 
-% ACKNOWLEDGEMENT:
-%   This document is a modified version of alpha.bst to which it owes much of
-%   its functionality.
-
-% AUTHOR
-%   Peter Williams, Key Centre for Design Quality, Sydney University
-%   e-mail: peterw@archsci.arch.su.oz.au
 
 ENTRY
   { address
