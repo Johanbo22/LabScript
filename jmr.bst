@@ -209,8 +209,8 @@ FUNCTION {format.rem.names}
 FUNCTION {format.authors}
 { author empty$
     { "" }
-    { author #1 "{vv~}{ll}{, jj}{, ff}" format.name$
-      "{ff }{vv~}{ll}{, jj}" author format.rem.names
+    { author #1 "{vv~}{ll}{, jj}{, f.}" format.name$
+      "{vv~}{ll}{, jj}{, f.}" author format.rem.names
     }
   if$
 }
@@ -218,8 +218,8 @@ FUNCTION {format.authors}
 FUNCTION {format.editors}
 { editor empty$
     { "" }
-    { editor #1 "{vv~}{ll}{, jj}{, ff}" format.name$
-      "{ff }{vv~}{ll}{, jj}" editor format.rem.names
+    { editor #1 "{vv~}{ll}{, jj}{, f.}" format.name$
+      "{vv~}{ll}{, jj}{, f.}" editor format.rem.names
       editor num.names$ #1 >
 	{ ", udgaver" * }
 	{ ", udgave." * }
@@ -329,8 +329,8 @@ FUNCTION {format.edition}
 { edition empty$
     { "" }
     { output.state mid.sentence =
-	{ edition "l" change.case$ " edn" * }
-	{ edition "t" change.case$ " edn" * }
+	{ edition "l" change.case$ " udg" * }
+	{ edition "t" change.case$ " udg" * }
       if$
     }
   if$
